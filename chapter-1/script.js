@@ -7,6 +7,8 @@ var FPS = 60;
 
 var ticks = 0;
 var time = 0;
+var days = ['Day of New Beginnings'];
+var weekprog = 0;
 var dayName = 'Day of New Beginnings';
 
 var burnSpeed = 350;
@@ -118,7 +120,7 @@ var Player = {
   height: 10,
   x: width / 2,
   y: height - 10,
-  color: '#591e51'
+  color: '#fa6900'
 };
 
 // ===== DRAW FUNCTIONS =====
@@ -127,7 +129,7 @@ var Player = {
 // master is always being called and therefore manages
 // all the graphic work.
 function drawSky() {
-  ctx.fillStyle = '#98def5';
+  ctx.fillStyle = '#a7dbd8';
   ctx.fillRect(0, 0, width, height);
 }
 
@@ -140,9 +142,9 @@ function drawBushes() {
   for (var i = 0; i < bushes.length; i++) {
     var bush = bushes[i];
     if (bush.isBurning) {
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = '#f40410';
     } else {
-      ctx.fillStyle = 'forestgreen';
+      ctx.fillStyle = '#7db362';
     }
     ctx.fillRect(bush.x, bush.y, bush.width, bush.height);
   }
@@ -151,7 +153,7 @@ function drawBushes() {
 function drawBricks() {
   for (var i = 0; i < bricks.length; i++) {
     var brick = bricks[i];
-    ctx.fillStyle = '#E0D0B6';
+    ctx.fillStyle = '#e0e4cc';
     ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
   }
 }
@@ -444,7 +446,14 @@ function update() {
     time++;
     if (time === dayLength + 1) {
       time = 0;
-      dayName = 'Day of ' + generateDayName();
+      weekprog = (weekprog + 1) % 7;
+      console.log(days.length);
+      if (days.length < 7) {
+        dayName = 'Day of ' + generateDayName();
+        days.push(dayName);
+      }else{
+        dayName = days[weekprog];
+      }
     }
   }
 
@@ -525,6 +534,7 @@ function keydown(event) {
     } else if (event.keyCode === 75) { // k
       bushes = [];
       bricks = [];
+      doors = [];
     } else if (event.keyCode === 81) { // q
       openDoor();
     } else if (event.keyCode === 40) { // down
@@ -578,26 +588,31 @@ function openDoor() {
   }
 }
 
+// ===== MISCELLANEOUS FUNCTIONS =====
 function generateDayName() {
-  var capitals = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var lowercase = 'abcdefghijklmnopqrstuvwxyz';
-
-  var name = ''
-  var length = Math.floor(Math.random() * (15 - 8)) + 7;
-  var accentIndex = Math.floor(Math.random() * (6 - 5)) + 4;
-
-  var j = Math.floor(Math.random() * (lowercase.length - 1));
-  name += capitals[j];
-
+  var capitalcons = 'BCDFGHJKLMNPQRSTVWXZ';
+  var vowels = 'aeiouy';
+  var lowercase = capitalcons.toLowerCase();
+  var name = '';
+  var length = randint(7)+7;
+  var accentIndex = randint(2)*2+2;
+  name += choice(capitalcons);
   for (var i = 0; i < length; i++) {
-    j = Math.floor(Math.random() * (lowercase.length - 1));
-
     if (i === accentIndex) {
       name += '\'';
-    } else {
-      name += lowercase[j];
+    } else if ((i+1)%2){
+      name += choice(vowels);
+    } else{
+      name += choice(lowercase);
     }
   }
 
   return name;
+}
+// NoNotCo Random Functions
+function randint(max){
+  return Math.floor(Math.random()*max);
+}
+function choice(iterable){
+  return iterable[randint(iterable.length)];
 }
